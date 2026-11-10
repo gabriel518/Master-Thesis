@@ -109,6 +109,7 @@ def fit_exponential(j, bins=60):
 rng = np.random.default_rng(SEED)
 x, px, y, py = initial_distribution(N_PART, EPSILON_X, EPSILON_Y, rng)
 jx0, jy0 = actions(x, px, y, py)
+x0, px0, y0, py0 = x.copy(), px.copy(), y.copy(), py.copy()
 
 # %% Tracking: omega_y goes linearly from m wx/n + delta_max to m wx/n - delta_max
 deltas = np.linspace(DELTA_MAX, -DELTA_MAX, N_TURNS)
@@ -145,6 +146,26 @@ fig.suptitle(f'Crossing of the {RESONANCE} resonance in {N_TURNS} turns, '
              f'$\\omega_x$={OMEGA_X}, $\\delta_{{max}}$={DELTA_MAX:.3f}')
 fig.tight_layout()
 fig.savefig('emittance_sharing.png', dpi=200)
+plt.show()
+
+# %% Coordinate histograms: positions (left) and momenta (right), before / after
+fig, axes = plt.subplots(1, 2, figsize=(11, 4.5))
+panels = [(axes[0], [('x', x0, x[alive]), ('y', y0, y[alive])], 'position'),
+          (axes[1], [('p_x', px0, px[alive]), ('p_y', py0, py[alive])], 'momentum')]
+for ax, coords, label in panels:
+    lim = max(np.percentile(np.abs(np.r_[c_i, c_f]), 99.5) for _, c_i, c_f in coords)
+    bins = np.linspace(-lim, lim, 80)
+    for color, (name, c_init, c_fin) in zip(['C0', 'C3'], coords):
+        ax.hist(c_init, bins=bins, density=True, histtype='step', ls='--',
+                color=color, label=f'${name}$ initial')
+        ax.hist(c_fin, bins=bins, density=True, histtype='step',
+                color=color, label=f'${name}$ final')
+    ax.set_xlabel(label)
+    ax.set_ylabel('density')
+    ax.legend(fontsize=8)
+fig.suptitle(f'Coordinates before / after crossing the {RESONANCE} resonance')
+fig.tight_layout()
+fig.savefig('emittance_sharing_coordinates.png', dpi=200)
 plt.show()
 
 # %%
