@@ -25,9 +25,16 @@ The figure is saved as emittance_sharing.png.
 # %% Imports
 from math import factorial
 
+from pathlib import Path
+
 import numpy as np
 
 # %% Parameters
+try:    # figures are saved next to this script
+    FIG_DIR = Path(__file__).resolve().parent
+except NameError:    # cells run one by one in an interactive window
+    FIG_DIR = Path.cwd()
+FIG_PREFIX = '02a'
 OMEGA_X = 2.602                # horizontal phase advance per turn [rad]
 RESONANCE = (1, 2)             # (m, n) of m omega_x - n omega_y = 2 pi k
 RESONANCE_K = 0                # integer k of the resonance condition (set the resonance condition in the equivalence class)
@@ -44,6 +51,11 @@ N_PART = int(1e4)
 EPSILON_X = 1e-4               # initial emittances (mean actions)
 EPSILON_Y = 1e-4
 SEED = 123
+
+# Simulation parameters written in the figure names
+FIG_TAG = (f'wx{OMEGA_X}_res{RESONANCE[0]}-{RESONANCE[1]}_dmax{DELTA_MAX}'
+           f'_r{ORDER_R}_K{K_R}_J{J_R}_turns{N_TURNS:.0e}_part{N_PART:.0e}'
+           f'_ex{EPSILON_X:.0e}_ey{EPSILON_Y:.0e}')
 
 
 # %% Functions
@@ -145,7 +157,7 @@ for ax, name, j_init, j_fin in [(axes[0], 'x', jx0, jx[alive]),
 fig.suptitle(f'Crossing of the {RESONANCE} resonance in {N_TURNS} turns, '
              f'$\\omega_x$={OMEGA_X}, $\\delta_{{max}}$={DELTA_MAX:.3f}')
 fig.tight_layout()
-fig.savefig('emittance_sharing.png', dpi=200)
+fig.savefig(FIG_DIR / f'{FIG_PREFIX}_emittance_sharing_{FIG_TAG}.png', dpi=200)
 plt.show()
 
 # %% Coordinate histograms: positions (left) and momenta (right), before / after
@@ -165,7 +177,7 @@ for ax, coords, label in panels:
     ax.legend(fontsize=8)
 fig.suptitle(f'Coordinates before / after crossing the {RESONANCE} resonance')
 fig.tight_layout()
-fig.savefig('emittance_sharing_coordinates.png', dpi=200)
+fig.savefig(FIG_DIR / f'{FIG_PREFIX}_emittance_sharing_coordinates_{FIG_TAG}.png', dpi=200)
 plt.show()
 
 # %%

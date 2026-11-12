@@ -9,15 +9,26 @@ drawn dark and thick, high orders light and thin.
 # %% Imports
 from math import gcd
 
+from pathlib import Path
+
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 
 # %% Parameters
+try:    # figures are saved next to this script
+    FIG_DIR = Path(__file__).resolve().parent
+except NameError:    # cells run one by one in an interactive window
+    FIG_DIR = Path.cwd()
+FIG_PREFIX = '00a'
 MAX_ORDER = 8
 WX_RANGE = (2.0, 3.0)   # omega_x window [rad]
 WY_RANGE = (2.0, 3.0)   # omega_y window [rad]
 WORKING_POINT = (2.602, 2.602)   # (omega_x, omega_y) [rad]
+
+# Simulation parameters written in the figure names
+FIG_TAG = (f'order{MAX_ORDER}_wx{WX_RANGE[0]}-{WX_RANGE[1]}'
+           f'_wy{WY_RANGE[0]}-{WY_RANGE[1]}')
 
 
 # %% Functions
@@ -80,7 +91,7 @@ ax.plot(*WORKING_POINT, "r*", ms=14, zorder=2, label=f"working point {WORKING_PO
 ax.legend(handles=ax.get_legend().legend_handles + [ax.get_lines()[-1]],
           loc="upper left", bbox_to_anchor=(1.02, 1), fontsize=8)
 fig.tight_layout()
-fig.savefig('resonance_web.png', dpi=200)
+fig.savefig(FIG_DIR / f'{FIG_PREFIX}_resonance_web_{FIG_TAG}.png', dpi=200)
 plt.show()
 
 # %%
